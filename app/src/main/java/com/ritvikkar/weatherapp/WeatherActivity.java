@@ -12,7 +12,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -20,7 +19,7 @@ import com.ritvikkar.weatherapp.data.WeatherApp;
 import com.ritvikkar.weatherapp.network.WeatherAPI;
 
 import org.w3c.dom.Text;
-
+//http://api.openweathermap.org/data/2.5/weather?id=2172797&appid=58c650224e13868c1655dbebb7e650d9
 import java.util.List;
 
 import butterknife.BindView;
@@ -62,7 +61,8 @@ public class WeatherActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Call<WeatherApp> call = weatherAPI.getCityByID("2172797");
+                //showAddCityActivity();
+                Call<WeatherApp> call = weatherAPI.getCityByName("London", "58c650224e13868c1655dbebb7e650d9");
                 call.enqueue(new Callback<WeatherApp>() {
                     @Override
                     public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
@@ -88,13 +88,6 @@ public class WeatherActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
     }
-
-    /*
-        @OnClick(R.id.fab)
-        void fabClicked(){
-            showAddCityActivity();
-        }
-    */
 
     private void showAddCityActivity() {
             Intent intentStart = new Intent().setClass(WeatherActivity.this, AddWeatherActivity.class);
