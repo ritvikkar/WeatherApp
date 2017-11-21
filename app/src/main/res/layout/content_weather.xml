@@ -8,4 +8,10 @@
     tools:context="com.ritvikkar.weatherapp.WeatherActivity"
     tools:showIn="@layout/app_bar_weather">
 
+    <TextView
+        android:id="@+id/tvAPITest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Placeholder Text"/>
+
 </android.support.constraint.ConstraintLayout>

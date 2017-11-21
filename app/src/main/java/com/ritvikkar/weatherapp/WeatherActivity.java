@@ -14,14 +14,34 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import com.ritvikkar.weatherapp.data.WeatherApp;
+import com.ritvikkar.weatherapp.network.WeatherAPI;
+
+import org.w3c.dom.Text;
+
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WeatherActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    @BindView(R.id.tvAPITest)
+    TextView tvAPITest;
+
+    @BindView(R.id.layoutContent)
+    CoordinatorLayout layoutContent;
+
     public static final int REQUEST_NEW_CITY = 101;
-
-
-    private CoordinatorLayout layoutContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,14 +50,30 @@ public class WeatherActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        layoutContent = (CoordinatorLayout) findViewById(
-                R.id.layoutContent);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://api.openweathermap.org/data/2.5/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final WeatherAPI weatherAPI = retrofit.create(WeatherAPI.class);
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showAddCityActivity();
+                Call<WeatherApp> call = weatherAPI.getCityByID("2172797");
+                call.enqueue(new Callback<WeatherApp>() {
+                    @Override
+                    public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
+                        tvAPITest.setText(response.body().getName());
+                    }
+
+                    @Override
+                    public void onFailure(Call<WeatherApp> call, Throwable t) {
+                        tvAPITest.setText(t.getMessage());
+                    }
+                });
             }
         });
 
@@ -49,7 +85,16 @@ public class WeatherActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        ButterKnife.bind(this);
     }
+
+    /*
+        @OnClick(R.id.fab)
+        void fabClicked(){
+            showAddCityActivity();
+        }
+    */
 
     private void showAddCityActivity() {
             Intent intentStart = new Intent().setClass(WeatherActivity.this, AddWeatherActivity.class);
@@ -78,8 +123,6 @@ public class WeatherActivity extends AppCompatActivity
         }).show();
     }
 
-
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -97,6 +140,7 @@ public class WeatherActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_add) {
+            showAddCityActivity();
         } else if (id == R.id.nav_info) {
 
         }
