@@ -22,13 +22,9 @@ public class AddWeatherActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_weather);
-
-        initCreate();
     }
 
     private void initCreate() {
-        etItemName.getText();
-
     }
 
     @OnClick(R.id.btnAdd)

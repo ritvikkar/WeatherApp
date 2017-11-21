@@ -34,6 +34,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class WeatherActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final String API_KEY = "58c650224e13868c1655dbebb7e650d9";
     @BindView(R.id.tvAPITest)
     TextView tvAPITest;
 
@@ -61,19 +62,21 @@ public class WeatherActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //showAddCityActivity();
-                Call<WeatherApp> call = weatherAPI.getCityByName("London", "58c650224e13868c1655dbebb7e650d9");
-                call.enqueue(new Callback<WeatherApp>() {
-                    @Override
-                    public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
-                        tvAPITest.setText(response.body().getName());
-                    }
+                showAddCityActivity();
+                /*
+                    Call<WeatherApp> call = weatherAPI.getCityByName("London", "metric", API_KEY);
+                    call.enqueue(new Callback<WeatherApp>() {
+                        @Override
+                        public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
+                            tvAPITest.setText(Double.toString(response.body().getMain().getTemp()));
+                        }
 
-                    @Override
-                    public void onFailure(Call<WeatherApp> call, Throwable t) {
-                        tvAPITest.setText(t.getMessage());
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<WeatherApp> call, Throwable t) {
+                            tvAPITest.setText(t.getMessage());
+                        }
+                    });
+                */
             }
         });
 
