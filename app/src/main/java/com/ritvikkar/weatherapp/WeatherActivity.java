@@ -15,32 +15,17 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.ritvikkar.weatherapp.adapter.WeatherAdapter;
 import com.ritvikkar.weatherapp.data.Location;
-import com.ritvikkar.weatherapp.data.WeatherApp;
-import com.ritvikkar.weatherapp.network.WeatherAPI;
-
-import org.w3c.dom.Text;
-//http://api.openweathermap.org/data/2.5/weather?id=2172797&appid=58c650224e13868c1655dbebb7e650d9
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WeatherActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final String API_KEY = "58c650224e13868c1655dbebb7e650d9";
     public static final String CITY_NAME = "CITY_NAME";
-    private int locationToViewPosition = -1;
     private WeatherAdapter weatherAdapter;
 
     @BindView(R.id.layoutContent)
@@ -125,7 +110,7 @@ public class WeatherActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -145,7 +130,7 @@ public class WeatherActivity extends AppCompatActivity
             showSnackBarMessage("Weather application created by Ritvik Kar");
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

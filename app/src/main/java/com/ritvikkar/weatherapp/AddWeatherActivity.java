@@ -38,36 +38,38 @@ public class AddWeatherActivity extends AppCompatActivity {
         if (etAddCity.getText() == null) {
             etAddCity.setError("Enter Value");
         }
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://api.openweathermap.org/data/2.5/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        else {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("http://api.openweathermap.org/data/2.5/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-        final WeatherAPI weatherAPI = retrofit.create(WeatherAPI.class);
+            final WeatherAPI weatherAPI = retrofit.create(WeatherAPI.class);
 
-        Call<WeatherApp> call = weatherAPI.getCityByName(etAddCity.getText().toString(),
-                "metric", API_KEY);
-        call.enqueue(new Callback<WeatherApp>() {
-            @Override
-            public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
-                if (response.body().getName() == null) {
-                    setResult(RESULT_CANCELED);
-                } else {
-                    Intent end = new Intent();
-                    end.putExtra(NAME, response.body().getName());
-                    end.putExtra(TEMP, response.body().getMain().getTemp());
-                    end.putExtra(DESC, response.body().getWeather().get(0).getDescription());
-                    end.putExtra(ICON, response.body().getWeather().get(0).getIcon());
-                    setResult(RESULT_OK, end);
+            Call<WeatherApp> call = weatherAPI.getCityByName(etAddCity.getText().toString(),
+                    "metric", API_KEY);
+            call.enqueue(new Callback<WeatherApp>() {
+                @Override
+                public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
+                    if (response.body() == null) {
+                        setResult(RESULT_CANCELED);
+                    } else {
+                        Intent end = new Intent();
+                        end.putExtra(NAME, response.body().getName());
+                        end.putExtra(TEMP, response.body().getMain().getTemp());
+                        end.putExtra(DESC, response.body().getWeather().get(0).getDescription());
+                        end.putExtra(ICON, response.body().getWeather().get(0).getIcon());
+                        setResult(RESULT_OK, end);
+                    }
+                    finish();
+
                 }
-                finish();
 
-            }
-
-            @Override
-            public void onFailure(Call<WeatherApp> call, Throwable t) {
-                Toast.makeText(AddWeatherActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<WeatherApp> call, Throwable t) {
+                    Toast.makeText(AddWeatherActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+        }
     }
 }
