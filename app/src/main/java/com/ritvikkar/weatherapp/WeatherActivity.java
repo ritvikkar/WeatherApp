@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.ritvikkar.weatherapp.adapter.WeatherAdapter;
+import com.ritvikkar.weatherapp.data.Location;
 import com.ritvikkar.weatherapp.data.WeatherApp;
 import com.ritvikkar.weatherapp.network.WeatherAPI;
 
@@ -35,8 +39,9 @@ public class WeatherActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String API_KEY = "58c650224e13868c1655dbebb7e650d9";
-    @BindView(R.id.tvAPITest)
-    TextView tvAPITest;
+    public static final String CITY_NAME = "CITY_NAME";
+    private int locationToViewPosition = -1;
+    private WeatherAdapter weatherAdapter;
 
     @BindView(R.id.layoutContent)
     CoordinatorLayout layoutContent;
@@ -50,35 +55,19 @@ public class WeatherActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://api.openweathermap.org/data/2.5/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        final WeatherAPI weatherAPI = retrofit.create(WeatherAPI.class);
-
         FloatingActionButton fab = findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showAddCityActivity();
-                /*
-                    Call<WeatherApp> call = weatherAPI.getCityByName("London", "metric", API_KEY);
-                    call.enqueue(new Callback<WeatherApp>() {
-                        @Override
-                        public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
-                            tvAPITest.setText(Double.toString(response.body().getMain().getTemp()));
-                        }
-
-                        @Override
-                        public void onFailure(Call<WeatherApp> call, Throwable t) {
-                            tvAPITest.setText(t.getMessage());
-                        }
-                    });
-                */
             }
         });
+
+        weatherAdapter = new WeatherAdapter(this);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(weatherAdapter);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -93,7 +82,8 @@ public class WeatherActivity extends AppCompatActivity
     }
 
     private void showAddCityActivity() {
-            Intent intentStart = new Intent().setClass(WeatherActivity.this, AddWeatherActivity.class);
+            Intent intentStart = new Intent()
+                    .setClass(WeatherActivity.this, AddWeatherActivity.class);
             startActivityForResult(intentStart, REQUEST_NEW_CITY);
     }
 
@@ -101,7 +91,14 @@ public class WeatherActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
             case RESULT_OK:
+                Bundle values = data.getExtras();
+                Location location = new Location((String) values.get(AddWeatherActivity.NAME),
+                        (double) values.get(AddWeatherActivity.TEMP),
+                        (String) values.get(AddWeatherActivity.DESC),
+                        (String) values.get(AddWeatherActivity.ICON));
+                weatherAdapter.addLocation(location);
                 break;
+
             case RESULT_CANCELED:
                 showSnackBarMessage(getString(R.string.txt_add_cancel));
                 break;
@@ -117,6 +114,13 @@ public class WeatherActivity extends AppCompatActivity
             public void onClick(View v) {
             }
         }).show();
+    }
+
+    public void showDetailsLocationActivity(String name) {
+        Intent intentStart = new Intent(WeatherActivity.this,
+                DetailsActivity.class);
+        intentStart.putExtra(CITY_NAME, name);
+        startActivity(intentStart);
     }
 
     @Override
@@ -138,7 +142,7 @@ public class WeatherActivity extends AppCompatActivity
         if (id == R.id.nav_add) {
             showAddCityActivity();
         } else if (id == R.id.nav_info) {
-
+            showSnackBarMessage("Weather application created by Ritvik Kar");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

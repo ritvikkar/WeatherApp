@@ -25,7 +25,10 @@
             android:name=".AddWeatherActivity"
             android:label="@string/title_activity_add_city"
             android:theme="@style/Base.Theme.AppCompat.Dialog" />
-        <activity android:name=".DetailsActivity"></activity>
+        <activity android:name=".DetailsActivity"
+            android:label="@string/txt_city_details"
+            android:theme="@style/Base.Theme.AppCompat.Dialog">
+        </activity>
     </application>
 
 </manifest>
