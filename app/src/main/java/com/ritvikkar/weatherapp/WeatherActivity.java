@@ -37,8 +37,6 @@ public class WeatherActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
 
@@ -49,12 +47,18 @@ public class WeatherActivity extends AppCompatActivity
             }
         });
 
-        weatherAdapter = new WeatherAdapter(this);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(weatherAdapter);
+        setupAdapter();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        setupNavigationDrawer();
+
+        ButterKnife.bind(this);
+    }
+
+    private void setupNavigationDrawer() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -62,8 +66,13 @@ public class WeatherActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
 
-        ButterKnife.bind(this);
+    private void setupAdapter() {
+        weatherAdapter = new WeatherAdapter(this);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(weatherAdapter);
     }
 
     private void showAddCityActivity() {
@@ -118,7 +127,6 @@ public class WeatherActivity extends AppCompatActivity
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -127,7 +135,7 @@ public class WeatherActivity extends AppCompatActivity
         if (id == R.id.nav_add) {
             showAddCityActivity();
         } else if (id == R.id.nav_info) {
-            showSnackBarMessage("Weather application created by Ritvik Kar");
+            showSnackBarMessage(getString(R.string.txt_application_creator));
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

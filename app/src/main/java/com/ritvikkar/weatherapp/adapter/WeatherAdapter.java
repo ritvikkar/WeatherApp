@@ -5,8 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,7 +29,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
 
         public ViewHolder(View weatherView) {
             super(weatherView);
-            ivIcon = weatherView.findViewById(R.id.ivIcon);
+            ivIcon = weatherView.findViewById(R.id.ivWeatherIcon);
             tvName = weatherView.findViewById(R.id.tvName);
             tvCurrentTemperature = weatherView.findViewById(R.id.tvCurrentTemperature);
             tvDescription = weatherView.findViewById(R.id.tvDescription);
@@ -61,12 +59,12 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
         Location location = locationList.get(position);
         holder.tvName.setText(location.getCity());
         holder.tvDescription.setText(location.getDescription());
-        holder.tvCurrentTemperature.setText(Double.toString(location.getTemp()));
+        holder.tvCurrentTemperature.setText(
+                String.format(context.getString(R.string.txt_temp_cel),
+                        Double.toString(location.getTemp())));
 
-        /*
-        String url = "http://openweathermap.org/img/w/" + location.getIcon() + ".png";
-        Glide.with(context).load(url).into(holder.ivIcon);
-        */
+        String url = context.getString(R.string.txt_url_img_base) + location.getIcon() + ".png";
+        Glide.with(context).load(url).centerCrop().into(holder.ivIcon);
 
         holder.btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override

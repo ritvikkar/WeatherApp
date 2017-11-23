@@ -11,4 +11,12 @@
     <string name="txt_add_cancel">Add City Cancelled</string>
     <string name="txt_city_details">City Details</string>
     <string name="title_activity_maps">Map</string>
+    <string name="txt_url_img_base">http://openweathermap.org/img/w/</string>
+    <string name="txt_temp_cel">%s°C</string>
+    <string name="txt_wind_ms">%sm/s</string>
+    <string name="txt_humid_perc">%s%%</string>
+    <string name="txt_err_emptyfield">Enter Value</string>
+    <string name="txt_apiurl_base">http://api.openweathermap.org/data/2.5/</string>
+    <string name="txt_units_metric">metric</string>
+    <string name="txt_application_creator">Weather application created by Ritvik Kar</string>
 </resources>

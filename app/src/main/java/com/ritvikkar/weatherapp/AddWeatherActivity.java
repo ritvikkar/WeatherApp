@@ -34,20 +34,22 @@ public class AddWeatherActivity extends AppCompatActivity {
 
     @OnClick(R.id.btnAdd)
     void addClicked(){
-        EditText etAddCity = (EditText) findViewById(R.id.etCityName);
+        EditText etAddCity = findViewById(R.id.etCityName);
         if (etAddCity.getText() == null) {
-            etAddCity.setError("Enter Value");
+            etAddCity.setError(getString(R.string.txt_err_emptyfield));
         }
         else {
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://api.openweathermap.org/data/2.5/")
+                    .baseUrl(getString(R.string.txt_apiurl_base))
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
             final WeatherAPI weatherAPI = retrofit.create(WeatherAPI.class);
 
-            Call<WeatherApp> call = weatherAPI.getCityByName(etAddCity.getText().toString(),
-                    "metric", API_KEY);
+            Call<WeatherApp> call = weatherAPI.getCityByName(
+                    etAddCity.getText().toString(),
+                    getString(R.string.txt_units_metric),
+                    API_KEY);
             call.enqueue(new Callback<WeatherApp>() {
                 @Override
                 public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
