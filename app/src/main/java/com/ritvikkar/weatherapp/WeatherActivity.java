@@ -18,9 +18,23 @@ import android.view.MenuItem;
 
 import com.ritvikkar.weatherapp.adapter.WeatherAdapter;
 import com.ritvikkar.weatherapp.data.Location;
+import com.ritvikkar.weatherapp.data.WeatherApp;
+import com.ritvikkar.weatherapp.network.WeatherAPI;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WeatherActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -37,6 +51,8 @@ public class WeatherActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
+
+        ((MainApplication) getApplication()).openRealm();
 
         FloatingActionButton fab = findViewById(R.id.fab);
 
@@ -69,11 +85,60 @@ public class WeatherActivity extends AppCompatActivity
     }
 
     private void setupAdapter() {
-        weatherAdapter = new WeatherAdapter(this);
+        RealmResults<Location> allCities = getRealm().where(Location.class).findAll();
+        Location citiesArray[] = new Location[allCities.size()];
+        List<Location> locationsResult = new ArrayList<>(Arrays.asList(allCities.toArray(citiesArray)));
+
+        updateInfo(locationsResult);
+
+        weatherAdapter = new WeatherAdapter(locationsResult, this);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(weatherAdapter);
     }
+
+    private void updateInfo(List<Location> locations) {
+        for (Location location: locations) {
+            getLocationInfo(location);
+        }
+    }
+
+    private void getLocationInfo(final Location location) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(getString(R.string.txt_apiurl_base))
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        final WeatherAPI weatherAPI = retrofit.create(WeatherAPI.class);
+
+        Call<WeatherApp> call = weatherAPI.getCityByName(location.getCity(),
+                getString(R.string.txt_units_metric), AddWeatherActivity.API_KEY);
+        call.enqueue(new Callback<WeatherApp>() {
+            @Override
+            public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
+                if (response.body() == null) {
+                    showSnackBarMessage(getString(R.string.txt_add_cancel) + location.getCity());
+                } else {
+                    getRealm().beginTransaction();
+                    location.setValues(response.body().getName(),
+                            response.body().getMain().getTemp(),
+                            response.body().getWeather().get(0).getDescription(),
+                            response.body().getWeather().get(0).getIcon());
+                    getRealm().commitTransaction();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WeatherApp> call, Throwable t) {
+                showSnackBarMessage(getString(R.string.action_hide));
+            }
+        });
+    }
+
+    public Realm getRealm() {
+        return ((MainApplication)getApplication()).getRealmPlaces();
+    }
+
 
     private void showAddCityActivity() {
             Intent intentStart = new Intent()
@@ -83,13 +148,16 @@ public class WeatherActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Bundle values = data.getExtras();
         switch (resultCode) {
             case RESULT_OK:
-                Bundle values = data.getExtras();
-                Location location = new Location((String) values.get(AddWeatherActivity.NAME),
+                getRealm().beginTransaction();
+                Location location = getRealm().createObject(Location.class, UUID.randomUUID().toString());
+                location.setValues((String) values.get(AddWeatherActivity.NAME),
                         (double) values.get(AddWeatherActivity.TEMP),
                         (String) values.get(AddWeatherActivity.DESC),
                         (String) values.get(AddWeatherActivity.ICON));
+                getRealm().commitTransaction();
                 weatherAdapter.addLocation(location);
                 break;
 
@@ -141,5 +209,11 @@ public class WeatherActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void deleteItem(Location location) {
+        getRealm().beginTransaction();
+        location.deleteFromRealm();
+        getRealm().commitTransaction();
     }
 }

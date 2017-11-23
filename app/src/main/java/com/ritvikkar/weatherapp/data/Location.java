@@ -1,17 +1,29 @@
 package com.ritvikkar.weatherapp.data;
 
-public class Location {
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+public class Location extends RealmObject {
+
+    @PrimaryKey
+    private String id;
 
     private String city;
     private double temp;
     private String description;
     private String icon;
 
-    public Location(String city, double temp, String description, String icon) {
+    public Location() {}
+
+    public void setValues(String city, double temp, String description, String icon) {
         this.city = city;
         this.temp = temp;
         this.description = description;
         this.icon = icon;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getCity() {

@@ -19,4 +19,5 @@
     <string name="txt_apiurl_base">http://api.openweathermap.org/data/2.5/</string>
     <string name="txt_units_metric">metric</string>
     <string name="txt_application_creator">Weather application created by Ritvik Kar</string>
+    <string name="txt_location_exists">Location Already In List</string>
 </resources>

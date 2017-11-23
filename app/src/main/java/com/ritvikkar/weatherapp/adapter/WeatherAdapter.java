@@ -41,8 +41,8 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
     private List<Location> locationList;
     private Context context;
 
-    public WeatherAdapter(Context context) {
-        this.locationList = new ArrayList<>();
+    public WeatherAdapter(List<Location> locationList, Context context) {
+        this.locationList = locationList;
         this.context = context;
     }
 
@@ -69,6 +69,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
         holder.btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ((WeatherActivity)context).deleteItem(locationList.get(holder.getAdapterPosition()));
                 locationList.remove(holder.getAdapterPosition());
                 notifyItemRemoved(holder.getAdapterPosition());
             }
